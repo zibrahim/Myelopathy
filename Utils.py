@@ -1,4 +1,6 @@
-
+from numpy import mean
+from numpy import var
+from math import sqrt
 import time
 from collections import Counter
 import pandas as pd
@@ -9,7 +11,7 @@ import numpy as np
 def get_distribution_percentages ( y_vals ) :
     y_distr = Counter(y_vals)
     y_vals_sum = sum(y_distr.values())
-    return [(y_distr[i] / y_vals_sum) for i in range(np.max(y_vals) + 1)]
+    return [(i, (y_distr[i] / y_vals_sum) ) for i in range(-1,np.max(y_vals) + 1)]
 
 def get_distribution_counts ( y_vals ) :
     y_distr = Counter(y_vals)
@@ -82,20 +84,28 @@ def clean(df):
     print(" final shape: ", df.shape)
     return df
 
-
-def above_threshold(x,t):
-    if x > t:
+def above_threshold_effect_size(x,y, t, sd):
+    difference =x-y
+    if (x-y)/sd >= t:
         return 1
-    elif -1*x > t:
+    elif (y-x)/sd  >= t:
         return -1
     else:
         return 0
 
 
-def exceeds_delta(x,y):
-    if y-x > 10:
-        return 1
-    elif y-x >=-10:
-        return 0
-    else:
-        return -1
+def get_effect_size(before, after):
+    #difference = [x-y for x, y in zip(after, before)]
+    difference = before - after
+    print("difference", difference)
+    mean_before = before.mean()
+    print("before mean", mean_before)
+    mean_after = after.mean()
+    print(" after mean", mean_after)
+    mean_difference = mean_before - mean_after
+    print(" mean difference", mean_difference)
+    sd = pd.Series(difference).std()
+    print("difference sd: ", sd)
+    effect_size = mean_difference/sd
+    return effect_size, sd
+

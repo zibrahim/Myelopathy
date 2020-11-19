@@ -33,21 +33,24 @@ categories = {'gender': ['Male', 'Female'],
                    'radicular' : ['No', 'Yes'],
                    }
 
-data = pd.read_csv('cleaned.csv')
+data = pd.read_csv('Data/cleandedDataSE.csv')
 
+cols = data.columns
 imp_mean = IterativeImputer(random_state=0)
 imp_mean.fit(data[predictors])
 data[predictors] = imp_mean.transform(data[predictors])
+data.columns = cols
 
-y = data['outcome_ttest']
-improved = data.loc[data['outcome_ttest'] == 1]
+y = data['outcome_effect_size']
+y_binary = data['outcome_effect_size_binary']
+improved = data.loc[data['outcome_effect_size_binary'] == 1]
 improved.columns = data.columns
-degraded = data.loc[data['outcome_ttest'] == -1]
+degraded = data.loc[data['outcome_effect_size_binary'] == -1]
 degraded.columns = data.columns
-unchanged = data.loc[data['outcome_ttest'] == 0]
+unchanged = data.loc[data['outcome_effect_size_binary'] == 0]
 unchanged.columns = data.columns
 
-o= open("Figures/StatisticalSignificance.txt", "w")
+o= open("Figures/StatisticalSignificanceES.txt", "w")
 print("***************************************** Overall ********************************************", file=o)
 
 print("\t Improved: ", len(improved), "(", "{:.2f}".format(len(improved)/len(data)), "%)",
@@ -66,19 +69,19 @@ for p in predictors:
     labels = ['Improved', 'Degraded', 'Unchanged']
     print("********************", p, "***********************", file=o)
     n = p_improved.unique()
-    if len(n) <=6:
+    if len(n) <=6 and p !='mdi_baseline_score':
         for i in n:
             cat_i = [x for x in p_improved if x ==i]
             print(" \t\t Improved - Category: ", categories[p][int(i)], "num patients: ", len(cat_i), file=o)
 
     n = p_degraded.unique()
-    if len(n) <=6:
+    if len(n) <=6  and p !='mdi_baseline_score':
         for i in n:
             cat_i = [x for x in p_degraded if x ==i]
             print(" \t\t Degraded - Category: ",categories[p][int(i)], "num patients: ", len(cat_i), file=o)
 
     n = p_unchanged.unique()
-    if len(n) <=6:
+    if len(n) <=6  and p !='mdi_baseline_score':
         for i in n:
             cat_i = [x for x in p_unchanged if x ==i]
             print(" \t\t Unchanged - Category: ", categories[p][int(i)], "num patients: ", len(cat_i), file=o)

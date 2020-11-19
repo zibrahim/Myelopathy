@@ -1,16 +1,13 @@
 import pandas as pd
 import xlrd
 from scipy.stats import ttest_ind
-
+from Utils import get_age, get_levels, add_diabetes, add_obesity, get_gender_int, get_approach_int, \
+    clean, get_cord_int, add_radicular
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 
-
-from Utils import get_age, get_levels, add_diabetes, add_obesity, get_gender_int, get_approach_int, clean, get_cord_int, \
-    add_radicular, above_threshold, get_distribution_percentages, exceeds_delta
-
-original_data = pd.read_excel (r'mySheet.xlsx') #place "r" before the path string to address special character, such as '\'. Don't forget to put the file name at the end of the path + '.xlsx'
+original_data = pd.read_excel (r'Data/mySheet.xlsx') #place "r" before the path string to address special character, such as '\'. Don't forget to put the file name at the end of the path + '.xlsx'
 
 cleaned_data = original_data.copy()
 cleaned_data.columns =  ['pathway_id',
@@ -46,18 +43,5 @@ cleaned_data['radicular'] = add_radicular(cleaned_data['symptoms'])
 cleaned_data = clean(cleaned_data)
 
 
-mdi_before = cleaned_data['mdi_baseline_score']
-mdi_after = cleaned_data['mdi_12m_score']
-mdi_delta = mdi_after - mdi_before
-mean_mdi_delta = mdi_delta.mean()
 
-x = ttest_ind(mdi_before , mdi_after , equal_var=False)
-tstatstic = x.statistic
-pvalue = x.pvalue
-
-cleaned_data['outcome_ttest'] = [above_threshold(x-y, tstatstic) for x, y in zip(mdi_before, mdi_after)]
-cleaned_data['outcome_10'] = [exceeds_delta(x, y) for x, y in zip(mdi_before, mdi_after)]
-print(" outcome distribution using t-test ", get_distribution_percentages(cleaned_data['outcome_ttest']))
-
-
-cleaned_data.to_csv("cleaned.csv", index=False)
+cleaned_data.to_csv("Data/cleaned.csv", index=False)

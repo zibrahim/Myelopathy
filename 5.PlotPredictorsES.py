@@ -36,7 +36,7 @@ predictor_labels = {'eq5d_baseline':'EQ5D\n Baseline',
                     'radicular': 'Radicular\n Pain'
                     }
 
-data = pd.read_csv('cleaned.csv')
+data = pd.read_csv('Data/cleandedDataSE.csv')
 predictors = ['eq5d_baseline','mdi_baseline_score',  'age','gender',
                         'approach',
                         'levels',
@@ -46,15 +46,15 @@ predictors = ['eq5d_baseline','mdi_baseline_score',  'age','gender',
                         'radicular'
                         ]
 
-y = data['outcome_ttest']
-improved = data.loc[data['outcome_ttest'] == 1]
+y = data['outcome_effect_size']
+improved = data.loc[data['outcome_effect_size_binary'] == 1]
 improved.columns = data.columns
 X_improved = improved[predictors]
 
-degraded = data.loc[data['outcome_ttest'] == -1]
+degraded = data.loc[data['outcome_effect_size_binary'] == -1]
 degraded.columns = data.columns
 X_degraded = degraded[predictors]
-unchanged = data.loc[data['outcome_ttest'] == 0]
+unchanged = data.loc[data['outcome_effect_size_binary'] == 0]
 unchanged.columns = data.columns
 X_unchanged = unchanged[predictors]
 
@@ -64,11 +64,11 @@ fig, axes= plt.subplots(nrows=2, ncols=5, sharey=False, sharex=False, figsize=(2
 
 for p, ax in zip(predictors, axes.flatten()):
 
-    X = [X_improved[p], X_unchanged[p], X_degraded[p]]
+    X = [ X_unchanged[p], X_degraded[p], X_improved[p]]
 
     colors = ['#5ca904', '#03719c', '#fc5a50'] #leaf green, ocean blue, coral
-    labels = ["Improved", "Unchanged", "Degraded"]
-    ax.hist(X,density=True, histtype='bar', stacked=False, label=labels)
+    labels = ["Unchanged", "Degraded","Improved"]
+    ax.hist(X,density=False, histtype='bar', stacked=False, label=labels)
     if X_improved[p].nunique() <=6:
         ax.set_xticks(range(0, len(predictor_ticks[p])))
         ax.set_xticklabels(predictor_ticks[p], rotation='vertical')
@@ -83,6 +83,5 @@ plt.subplots_adjust(right=0.85)
 
 plt.tight_layout()
 plt.tight_layout(h_pad=0.4, w_pad = 0.4, pad = 3)
-plt.savefig("Figures/StackedHistogram.png")
+plt.savefig("Figures/StackedHistogramES.png")
 
-o.close()

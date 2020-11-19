@@ -13,17 +13,10 @@ from Utils import get_distribution_counts, get_distribution_percentages
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 
-
-def exceeds_delta(x,y):
-    if x-y > 10:
-        return 1
-    else:
-        return 0
-
 def get_deta(x,y):
     return x-y
 
-original_data = pd.read_csv('cleaned.csv')
+original_data = pd.read_csv('Data/cleaned.csv')
 predictors = ['eq5d_baseline','mdi_baseline_score',  'age','gender',
                         'approach',
                         'levels',
@@ -42,7 +35,7 @@ X.hist()
 plt.tight_layout(pad=0.4, w_pad=0.4, h_pad=1.0)
 plt.savefig("Figures/DataHistogram.png")
 
-print(X.describe())
+print(X.columns)
 print("Gender: ", get_distribution_counts(X['gender']),  get_distribution_percentages(X['gender']))
 print("Approach: ", get_distribution_counts(X['approach']),  get_distribution_percentages(X['approach']))
 print("Diabetes: ", get_distribution_counts(X['diabetes']),  get_distribution_percentages(X['diabetes']))
